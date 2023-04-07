@@ -1,0 +1,27 @@
+version: "3.2"
+
+services:
+  db:
+    image: postgres:latest
+    container_name: referral-db
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-referral}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  app:
+    build: .
+    container_name: referral-app
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-referral}
+      POSTGRES_HOST: ${POSTGRES_HOST:-db}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      APP_PORT: ${APP_PORT:-3000}
+    ports:
+      - "${APP_PORT:-3000}:${APP_PORT:-3000}"
