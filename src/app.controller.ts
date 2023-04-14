@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { TransactionService } from './transaction/transaction.service';
 import TransactionCreateDto from './transaction/dto/TransactionCreate.dto';
 
-@Controller()
+@Controller({ host: 'public' })
 export class AppController {
   constructor(private transactionService: TransactionService) {}
 

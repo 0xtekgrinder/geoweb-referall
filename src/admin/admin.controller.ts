@@ -13,7 +13,7 @@ import UserCreateDto from 'src/user/dto/UserCreate.dto';
 import UserUpdateDto from 'src/user/dto/UserUpdate.dto';
 import { UserService } from 'src/user/user.service';
 
-@Controller('admin')
+@Controller({ path: 'admin', host: 'private' })
 export class AdminController {
   constructor(
     private userService: UserService,
