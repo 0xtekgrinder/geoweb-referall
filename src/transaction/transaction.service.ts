@@ -16,7 +16,7 @@ export class TransactionService {
     return await this.transactionRepository.find();
   }
 
-  async findOneByTxHash(txHash: string): Promise<TransactionEntity> {
+  async findOneByTxHash(txHash: string): Promise<TransactionEntity | null> {
     return await this.transactionRepository.findOneBy({ txHash });
   }
 
@@ -28,7 +28,7 @@ export class TransactionService {
     return await this.transactionRepository.delete({ txHash });
   }
 
-  async deleteAllByReferralId(referralId: string) {
+  async deleteByReferralId(referralId: string) {
     return await this.transactionRepository.delete({ referralId });
   }
 

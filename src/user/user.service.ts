@@ -16,11 +16,11 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  async findOneById(id: string): Promise<UserEntity> {
+  async findOneById(id: string): Promise<UserEntity | null> {
     return await this.userRepository.findOneBy({ id });
   }
 
-  async findOneByAddress(address: string): Promise<UserEntity> {
+  async findOneByAddress(address: string): Promise<UserEntity | null> {
     return await this.userRepository.findOneBy({ address });
   }
 
