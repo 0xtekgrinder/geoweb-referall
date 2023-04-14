@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, PrimaryColumn } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { UserEntity } from 'src/user/user.entity';
 
-@Entity()
+@Entity({ name: 'transactions' })
 export class TransactionEntity {
   @PrimaryColumn()
   txHash: string;

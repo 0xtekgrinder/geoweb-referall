@@ -6,6 +6,7 @@ import { TransactionEntity } from './transaction/transaction.entity';
 import { TransactionModule } from './transaction/transaction.module';
 import { AdminModule } from './admin/admin.module';
 import { UserModule } from './user/user.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { UserModule } from './user/user.module';
     AdminModule,
     UserModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}
