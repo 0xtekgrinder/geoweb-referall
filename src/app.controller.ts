@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { TransactionService } from './transaction/transaction.service';
 import * as ucans from '@ucans/ucans';
-import * as dagJose from 'dag-jose';
 
 @Controller({ host: 'public' })
 export class AppController {
@@ -23,18 +22,17 @@ export class AppController {
       throw new UnauthorizedException('No UCAN provided');
     }
 
-    const decodedJwt = dagJose.decode(
-      Buffer.from(headers.jwt),
-    ) as dagJose.DagJWS;
+    const dagJose = await import('dag-jose');
+    const decodedJwt = dagJose.decode(Buffer.from(headers.jwt));
     console.log(decodedJwt);
 
-    const parsed = JSON.parse(decodedJwt.payload);
-    console.log(parsed);
-
-    // ucans.verify(headers.ucan, {})
-    return this.transactionService.create({
-      referralId: parsed.referralId,
-      txHash: parsed.txHash,
-    });
+    // const parsed = JSON.parse(decodedJwt.payload);
+    // console.log(parsed);
+// 
+    // // ucans.verify(headers.ucan, {})
+    // return this.transactionService.create({
+    //   referralId: parsed.referralId,
+    //   txHash: parsed.txHash,
+    // });
   }
 }
