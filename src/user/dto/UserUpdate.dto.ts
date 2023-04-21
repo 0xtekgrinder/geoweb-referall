@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import UserCreateDto from './UserCreate.dto';
+import { PartialType } from '@nestjs/swagger';
+import UserCreateDto from './User.dto';
 
 export default class UserUpdateDto extends PartialType(UserCreateDto) {}

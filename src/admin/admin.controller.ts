@@ -8,12 +8,25 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { TransactionService } from 'src/transaction/transaction.service';
-import UserCreateDto from 'src/user/dto/UserCreate.dto';
+import UserDto from 'src/user/dto/User.dto';
 import UserUpdateDto from 'src/user/dto/UserUpdate.dto';
 import { UserService } from 'src/user/user.service';
+import ReferralIdDto from './dto/ReferralId.dto';
+import TxHashDto from './dto/TxHash.dto';
+import IdDto from './dto/Id.dto';
+import { UserEntity } from 'src/user/user.entity';
+import { TransactionEntity } from 'src/transaction/transaction.entity';
+import TransactionDto from 'src/transaction/dto/Transaction.dto';
 
 @Controller({ path: 'admin', host: 'private' })
+@ApiTags('Admin')
 export class AdminController {
   constructor(
     private userService: UserService,
@@ -21,32 +34,42 @@ export class AdminController {
   ) {}
 
   @Post('user')
-  async createUser(@Body() user: UserCreateDto) {
+  @ApiOperation({ summary: 'Create user' })
+  @ApiCreatedResponse({
+    description: 'The user was successfully created',
+    type: UserDto,
+  })
+  async createUser(@Body() user: UserDto): Promise<UserEntity> {
     return this.userService.create(user);
   }
 
   @Put('user/:id')
-  async updateUser(@Body() user: UserUpdateDto, @Param('id') id: string) {
-    return this.userService.update(id, user);
+  @ApiOperation({ summary: 'Update user by id' })
+  @ApiOkResponse({
+    description: 'The user was successfully updated',
+  })
+  async updateUser(@Body() user: UserUpdateDto, @Param() params: IdDto) {
+    return this.userService.update(params.id, user);
   }
 
   @Get('users')
-  async getUsers() {
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiOkResponse({
+    description: 'The users were successfully retrieved',
+    type: [UserDto],
+  })
+  async getUsers(): Promise<UserEntity[]> {
     return this.userService.findAll();
   }
 
   @Get('user/:id')
-  async getUser(@Param('id') id: string) {
-    const user = this.userService.findOneById(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    return user;
-  }
-
-  @Get('user/address/:address')
-  async getUserByAddress(@Param('address') address: string) {
-    const user = this.userService.findOneByAddress(address);
+  @ApiOperation({ summary: 'Get user by id' })
+  @ApiOkResponse({
+    description: 'The user was successfully retrieved',
+    type: UserDto,
+  })
+  async getUser(@Param() params: IdDto): Promise<UserEntity> {
+    const user = this.userService.findOneById(params.id);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -54,23 +77,46 @@ export class AdminController {
   }
 
   @Delete('user/:id')
-  async deleteUser(@Param('id') id: string) {
-    return this.userService.deleteById(id);
+  @ApiOperation({ summary: 'Delete user by id' })
+  @ApiOkResponse({
+    description: 'The user was successfully deleted',
+  })
+  async deleteUser(@Param() params: IdDto) {
+    return this.userService.deleteById(params.id);
   }
 
   @Get('transactions')
-  async getTransactions() {
+  @ApiOperation({ summary: 'Get all transactions' })
+  @ApiOkResponse({
+    description: 'The transactions were successfully retrieved',
+    type: [TransactionDto],
+  })
+  async getTransactions(): Promise<TransactionEntity[]> {
     return this.transactionService.findAll();
   }
 
   @Get('transactions/:referralId')
-  async getTransaction(@Param('referralId') referralId: string) {
-    return this.transactionService.findAllByReferralId(referralId);
+  @ApiOperation({ summary: 'Get all transactions by referralId' })
+  @ApiOkResponse({
+    description: 'The transactions were successfully retrieved',
+    type: [TransactionDto],
+  })
+  async getTransaction(
+    @Param() params: ReferralIdDto,
+  ): Promise<TransactionEntity[]> {
+    return this.transactionService.findAllByReferralId(params.referralId);
   }
 
   @Get('transactions/txHash/:txHash')
-  async getTransactionByTxHash(@Param('txHash') txHash: string) {
-    const transaction = this.transactionService.findOneByTxHash(txHash);
+  @ApiOperation({ summary: 'Get transaction by txHash' })
+  @ApiOkResponse({
+    description: 'The transaction was successfully retrieved',
+    type: TransactionDto,
+  })
+  async getTransactionByTxHash(
+    @Param() params: TxHashDto,
+  ): Promise<TransactionEntity> {
+    const transaction = this.transactionService.findOneByTxHash(params.txHash);
     if (!transaction) {
       throw new NotFoundException('Transaction not found');
     }
@@ -78,12 +124,20 @@ export class AdminController {
   }
 
   @Delete('transaction/:txHash')
-  async deleteTransaction(@Param('txHash') txHash: string) {
-    return this.transactionService.deleteByTxHash(txHash);
+  @ApiOperation({ summary: 'Delete transaction by txHash' })
+  @ApiOkResponse({
+    description: 'The transaction was successfully deleted',
+  })
+  async deleteTransaction(@Param() params: TxHashDto) {
+    return this.transactionService.deleteByTxHash(params.txHash);
   }
 
   @Delete('transactions/:referralId')
-  async deleteTransactions(@Param('referralId') referralId: string) {
-    return this.transactionService.deleteByReferralId(referralId);
+  @ApiOperation({ summary: 'Delete all transactions by referralId' })
+  @ApiOkResponse({
+    description: 'The transactions were successfully deleted',
+  })
+  async deleteTransactions(@Param() params: ReferralIdDto) {
+    return this.transactionService.deleteByReferralId(params.referralId);
   }
 }

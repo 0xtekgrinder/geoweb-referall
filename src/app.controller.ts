@@ -5,12 +5,22 @@ import {
   Headers,
   UnauthorizedException,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiHeaders,
+  ApiUnauthorizedResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { TransactionService } from './transaction/transaction.service';
 import * as ucans from '@ucans/ucans';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from './user/user.service';
+import { TransactionEntity } from './transaction/transaction.entity';
+import TransactionDto from './transaction/dto/Transaction.dto';
 
 @Controller({ host: 'public' })
+@ApiTags('App')
 export class AppController {
   private logger = new Logger(AppController.name);
   constructor(
@@ -20,7 +30,33 @@ export class AppController {
   ) {}
 
   @Post('claim')
-  async claim(@Headers() headers: Record<string, string>) {
+  @ApiOperation({
+    summary: 'Claim a transaction by a referral',
+  })
+  @ApiHeaders([
+    {
+      name: 'jwt',
+      description:
+        'A signed JWT containing the transaction hash and the referral ID',
+      required: true,
+    },
+    {
+      name: 'ucan',
+      description:
+        'A ucan containing the capability to post to this endpoint with ',
+      required: true,
+    },
+  ])
+  @ApiCreatedResponse({
+    description: 'The transaction was successfully claimed',
+    type: TransactionDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'The JWT or UCAN was invalid',
+  })
+  async claim(
+    @Headers() headers: Record<string, string>,
+  ): Promise<TransactionEntity> {
     if (!headers.jwt) {
       this.logger.log('No JWT provided');
       throw new UnauthorizedException('No JWT provided');
@@ -30,7 +66,8 @@ export class AppController {
       throw new UnauthorizedException('No UCAN provided');
     }
 
-    // const pkhDidResolver = import('pkh-did-resolver');
+    this.logger.log('Trying to verify JWT and UCAN', headers.jwt, headers.ucan);
+
     const keyDidResolver = import('key-did-resolver');
 
     const dids = await import('dids');
