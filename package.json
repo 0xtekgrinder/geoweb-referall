@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@ipld/dag-ucan": "^3.3.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
@@ -30,8 +31,11 @@
     "@ucans/ucans": "^0.11.4",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
-    "dag-jose": "^4.0.0",
+    "dids": "^4.0.0",
+    "ethers": "^6.3.0",
+    "key-did-resolver": "^3.0.0",
     "pg": "^8.10.0",
+    "pkh-did-resolver": "^1.2.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
