@@ -34,3 +34,9 @@ docker compose up
 ```
 
 You are now ready to access to your API at [`http://localhost:3000`](http://localhost:3000) and [`http://localhost:3001`](http://localhost:3001)
+
+## Documentation
+
+You can access the swagger documentation at `doc` route.
+
+Just be sure to keep in mind that admin routes are on port 3001 and app routes are on port 3000.
