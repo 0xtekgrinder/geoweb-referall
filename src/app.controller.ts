@@ -17,8 +17,8 @@ export class AppController {
     private configService: ConfigService,
   ) {}
 
-  @Post('submit')
-  async submit(@Headers() headers: Record<string, string>) {
+  @Post('claim')
+  async claim(@Headers() headers: Record<string, string>) {
     if (!headers.jwt) {
       throw new UnauthorizedException('No JWT provided');
     }
