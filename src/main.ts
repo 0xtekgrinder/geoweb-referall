@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import * as express from 'express';
 import * as http from 'http';
+import * as cors from 'cors';
 
 async function bootstrap() {
   const server = express();
@@ -25,10 +26,16 @@ async function bootstrap() {
     next();
   });
 
+  server.use(
+    cors({
+      credentials: true,
+      origin: true,
+    }),
+  );
+
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
 
   await app.init();
 
