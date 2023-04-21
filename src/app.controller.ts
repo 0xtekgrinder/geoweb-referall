@@ -8,6 +8,7 @@ import {
 import { TransactionService } from './transaction/transaction.service';
 import * as ucans from '@ucans/ucans';
 import { ConfigService } from '@nestjs/config';
+import { UserService } from './user/user.service';
 
 @Controller({ host: 'public' })
 export class AppController {
@@ -15,14 +16,17 @@ export class AppController {
   constructor(
     private transactionService: TransactionService,
     private configService: ConfigService,
+    private userService: UserService,
   ) {}
 
   @Post('claim')
   async claim(@Headers() headers: Record<string, string>) {
     if (!headers.jwt) {
+      this.logger.log('No JWT provided');
       throw new UnauthorizedException('No JWT provided');
     }
     if (!headers.ucan) {
+      this.logger.log('No UCAN provided');
       throw new UnauthorizedException('No UCAN provided');
     }
 
@@ -41,7 +45,16 @@ export class AppController {
       !parsedJWS.payload.txHash ||
       !parsedJWS.payload.referralId
     ) {
+      this.logger.log('Invalid JWT payload', parsedJWS.payload);
       throw new UnauthorizedException('Invalid JWT payload');
+    }
+
+    const user = await this.userService.findOneById(
+      parsedJWS.payload.referralId,
+    );
+    if (!user) {
+      this.logger.log('Invalid referral ID', parsedJWS.payload.referralId);
+      throw new UnauthorizedException('Invalid referral ID');
     }
 
     const provider = import('ethers').then(
@@ -56,6 +69,7 @@ export class AppController {
     ).getTransaction(parsedJWS.payload.txHash);
 
     if (!transaction) {
+      this.logger.log('Invalid transaction hash', parsedJWS.payload.txHash);
       throw new UnauthorizedException('Invalid transaction hash');
     }
 
@@ -78,6 +92,7 @@ export class AppController {
     });
 
     if (!result.ok) {
+      this.logger.log('Invalid UCAN', result);
       throw new UnauthorizedException('Invalid UCAN');
     }
 

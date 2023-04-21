@@ -20,12 +20,12 @@ export class AdminController {
     private transactionService: TransactionService,
   ) {}
 
-  @Post('user/create')
+  @Post('user')
   async createUser(@Body() user: UserCreateDto) {
     return this.userService.create(user);
   }
 
-  @Put('user/update/:id')
+  @Put('user/:id')
   async updateUser(@Body() user: UserUpdateDto, @Param('id') id: string) {
     return this.userService.update(id, user);
   }
@@ -63,7 +63,7 @@ export class AdminController {
     return this.transactionService.findAll();
   }
 
-  @Get('transaction/:referralId')
+  @Get('transactions/:referralId')
   async getTransaction(@Param('referralId') referralId: string) {
     return this.transactionService.findAllByReferralId(referralId);
   }
