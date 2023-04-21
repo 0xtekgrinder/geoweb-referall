@@ -1,11 +1,10 @@
-import { Entity, ManyToOne, PrimaryColumn } from 'typeorm';
-import { UserEntity } from 'src/user/user.entity';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'transactions' })
 export class TransactionEntity {
   @PrimaryColumn()
   txHash: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.id)
+  @Column()
   referralId: string;
 }

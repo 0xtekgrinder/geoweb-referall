@@ -3,3 +3,5 @@ dist
 .prettierrc
 .eslintrc.js
 test
+Dockerfile
+docker-compose.yml

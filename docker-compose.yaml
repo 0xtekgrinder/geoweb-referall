@@ -24,6 +24,9 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       PUBLIC_PORT: ${PUBLIC_PORT:-3000}
       PRIVATE_PORT: ${PRIVATE_PORT:-3001}
+      ROOT_ISSUER: ${ROOT_ISSUER:-did:key:z6MkehxGCJwrg8DmqzjgUxZ8np2e3FVUJkzNGneEoXicrQyZ}
+      RPC_URL: ${RPC_URL:-http://localhost:8545}
+      CHAIN_ID: ${CHAIN_ID:-10}
     ports:
       - "${PUBLIC_PORT:-3000}:${PUBLIC_PORT:-3000}"
       - "${PRIVATE_PORT:-3001}:${PRIVATE_PORT:-3001}"
