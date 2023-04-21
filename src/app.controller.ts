@@ -59,18 +59,16 @@ export class AppController {
       throw new UnauthorizedException('Invalid transaction hash');
     }
 
-    // TODO check if transaction is from the user
-
     const result = await ucans.verify(headers.ucan, {
-      audience: parsedJWS.kid,
+      audience: parsedJWS.didResolutionResult.didDocument.id,
       requiredCapabilities: [
         {
           capability: {
             with: {
-              scheme: 'https://geoweb.network/claim/did:pkh',
-              hierPart: `eip155:${this.configService.get<string>('CHAIN_ID')}:${
-                transaction.from
-              }`,
+              scheme: 'https',
+              hierPart: `//geoweb.network/claim/did:pkh:eip155:${this.configService.get<string>(
+                'CHAIN_ID',
+              )}:${transaction.from}`,
             },
             can: { namespace: 'http', segments: ['post'] },
           },
