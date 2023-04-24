@@ -18,6 +18,10 @@ import { ConfigService } from '@nestjs/config';
 import { UserService } from './user/user.service';
 import { TransactionEntity } from './transaction/transaction.entity';
 import TransactionDto from './transaction/dto/Transaction.dto';
+import {
+  IRegistryDiamondABI,
+  getContractAddressesForChainOrThrow,
+} from '@geo-web/sdk';
 
 @Controller({ host: 'public' })
 @ApiTags('App')
@@ -94,20 +98,35 @@ export class AppController {
       throw new UnauthorizedException('Invalid referral ID');
     }
 
-    const provider = import('ethers').then(
-      (ethers) =>
-        new ethers.ethers.JsonRpcProvider(
-          this.configService.get<string>('RPC_URL'),
-        ),
-    );
+    const chainId = this.configService.get<number>('CHAIN_ID');
+    const ethers = await import('ethers');
+    const rpcUrl = this.configService.get<string>('RPC_URL');
 
-    const transaction = await (
-      await provider
-    ).getTransaction(parsedJWS.payload.txHash);
+    const provider = new ethers.ethers.JsonRpcProvider(rpcUrl);
+
+    const { registryDiamond } = getContractAddressesForChainOrThrow(chainId);
+    const registry = new ethers.ethers.Contract(
+      registryDiamond,
+      IRegistryDiamondABI,
+      provider,
+    );
+    const selector = registry.interface.getFunction('claim').selector;
+
+    const transaction = await provider.getTransaction(parsedJWS.payload.txHash);
 
     if (!transaction) {
       this.logger.log('Invalid transaction hash', parsedJWS.payload.txHash);
       throw new UnauthorizedException('Invalid transaction hash');
+    }
+
+    if (transaction.to !== registryDiamond) {
+      this.logger.log('Invalid transaction recipient', transaction.to);
+      throw new UnauthorizedException('Invalid transaction recipient');
+    }
+
+    if (transaction.data.substring(selector.length) === selector) {
+      this.logger.log('Invalid transaction data', transaction.data);
+      throw new UnauthorizedException('Invalid transaction data');
     }
 
     const result = await ucans.verify(headers.ucan, {

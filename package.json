@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@geo-web/sdk": "^4.2.0",
     "@ipld/dag-ucan": "^3.3.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
