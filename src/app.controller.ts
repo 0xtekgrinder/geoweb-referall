@@ -141,14 +141,19 @@ export class AppController {
       );
     }
 
+    const domainName = this.configService.get<string>('DOMAIN_NAME');
+
     const result = await ucans.verify(headers.ucan, {
       audience: parsedJWS.didResolutionResult.didDocument.id,
       requiredCapabilities: [
         {
           capability: {
             with: {
-              scheme: 'https',
-              hierPart: `//geoweb.network/claim/did:pkh:eip155:${chainId}:${transaction.from}`,
+              scheme: domainName.split(':')[0],
+              hierPart: `${domainName
+                .split(':')
+                .slice(1)
+                .join()}/claim/did:pkh:eip155:${chainId}:${transaction.from}`,
             },
             can: { namespace: 'http', segments: ['post'] },
           },
