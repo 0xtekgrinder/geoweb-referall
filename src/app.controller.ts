@@ -110,23 +110,35 @@ export class AppController {
       IRegistryDiamondABI,
       provider,
     );
-    const selector = registry.interface.getFunction('claim').selector;
+    const topic = registry.interface.getEvent('ParcelClaimedV2').topicHash;
 
     const transaction = await provider.getTransaction(parsedJWS.payload.txHash);
+    const receipt = await transaction.wait();
 
     if (!transaction) {
       this.logger.log('Invalid transaction hash', parsedJWS.payload.txHash);
       throw new UnauthorizedException('Invalid transaction hash');
     }
 
-    if (transaction.to !== registryDiamond) {
-      this.logger.log('Invalid transaction recipient', transaction.to);
-      throw new UnauthorizedException('Invalid transaction recipient');
+    if (!receipt) {
+      this.logger.log('Invalid transaction receipt', parsedJWS.payload.txHash);
+      throw new UnauthorizedException('Invalid transaction receipt');
     }
 
-    if (transaction.data.substring(selector.length) === selector) {
-      this.logger.log('Invalid transaction data', transaction.data);
-      throw new UnauthorizedException('Invalid transaction data');
+    let found = false;
+    for (const log of receipt.logs) {
+      if (log.topics[0] === topic && log.address === registryDiamond) {
+        found = true;
+      }
+    }
+    if (!found) {
+      this.logger.log(
+        `Transaction doesn't emit ParcelClaimedV2`,
+        parsedJWS.payload.txHash,
+      );
+      throw new UnauthorizedException(
+        `Transaction doesn't emit ParcelClaimedV2`,
+      );
     }
 
     const result = await ucans.verify(headers.ucan, {
@@ -136,9 +148,7 @@ export class AppController {
           capability: {
             with: {
               scheme: 'https',
-              hierPart: `//geoweb.network/claim/did:pkh:eip155:${this.configService.get<string>(
-                'CHAIN_ID',
-              )}:${transaction.from}`,
+              hierPart: `//geoweb.network/claim/did:pkh:eip155:${chainId}:${transaction.from}`,
             },
             can: { namespace: 'http', segments: ['post'] },
           },
