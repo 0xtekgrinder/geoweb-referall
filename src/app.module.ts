@@ -18,11 +18,7 @@ import { AppController } from './app.controller';
       useFactory: async (configService: ConfigService) => {
         return {
           type: 'postgres',
-          host: configService.get<string>('POSTGRES_HOST'),
-          port: configService.get<number>('POSTGRES_PORT'),
-          username: configService.get<string>('POSTGRES_USER'),
-          password: configService.get<string>('POSTGRES_PASSWORD'),
-          database: configService.get<string>('POSTGRES_DB'),
+          url: configService.get('POSTGRES_URL'),
           synchronize: true,
           entities: [UserEntity, TransactionEntity],
         };
