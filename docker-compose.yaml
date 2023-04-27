@@ -17,11 +17,7 @@ services:
     build: .
     container_name: referral-app
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-referral}
-      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_URL: ${POSTGRES_URL:-postgres://user:password@db:5432/referral}
       PUBLIC_PORT: ${PUBLIC_PORT:-3000}
       PRIVATE_PORT: ${PRIVATE_PORT:-3001}
       ROOT_ISSUER: ${ROOT_ISSUER:-did:key:z6MkehxGCJwrg8DmqzjgUxZ8np2e3FVUJkzNGneEoXicrQyZ}
